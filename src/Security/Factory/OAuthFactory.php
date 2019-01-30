@@ -154,7 +154,7 @@ class OAuthFactory implements SecurityFactoryInterface
 
         $storageId = $jwtStorageId;
         $definition = $container->getDefinition($jwtStorageId);
-        if (Jwt::class === $definition->getClass()) {
+        if (Storage\Jwt::class === $definition->getClass()) {
             $definition = new ChildDefinition($jwtStorageId);
             $definition
                 ->replaceArgument(0, $config['oauth_user_provider'])

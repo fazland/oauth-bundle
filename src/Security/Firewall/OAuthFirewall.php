@@ -53,7 +53,7 @@ class OAuthFirewall implements ListenerInterface
             return;
         }
 
-        $request = Request::createFromRequest($event->getRequest());
+        $request = Request::createFromRequest($request);
 
         $response = new Response();
         $response->setError(HttpResponse::HTTP_UNAUTHORIZED, 'access_denied', 'OAuth authentication required');
@@ -70,14 +70,14 @@ class OAuthFirewall implements ListenerInterface
         $token->setToken($data);
 
         try {
-            $ret = $this->authenticationManager->authenticate($token);
+            $result = $this->authenticationManager->authenticate($token);
 
-            if ($ret instanceof TokenInterface) {
-                $this->tokenStorage->setToken($ret);
+            if ($result instanceof TokenInterface) {
+                $this->tokenStorage->setToken($result);
             }
 
-            if ($ret instanceof HttpResponse) {
-                $event->setResponse($ret);
+            if ($result instanceof HttpResponse) {
+                $event->setResponse($result);
             }
         } catch (AuthenticationException $ex) {
             $previous = $ex->getPrevious();
