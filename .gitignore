@@ -1,0 +1,13 @@
+composer.phar
+/vendor/
+composer.lock
+/var/
+
+/bin/*
+!bin/console
+
+# PHPUnit
+/app/phpunit.xml
+/phpunit.xml
+
+.php_cs.cache

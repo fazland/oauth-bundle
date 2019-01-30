@@ -1,0 +1,48 @@
+{
+    "name": "fazland/oauth-bundle",
+    "description": "Easily integrate OAuth authentication in your Symfony application",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Massimiliano Braglia",
+            "email": "massimiliano.braglia@fazland.com"
+        },
+        {
+            "name": "Alessandro Chitolina",
+            "email": "alessandro.chitolina@fazland.com"
+        },
+        {
+            "name": "Fazland Team",
+            "email": "devs@fazland.com"
+        }
+    ],
+    "require": {
+        "php": "^7.1",
+        "ext-json": "*",
+        "bshaffer/oauth2-server-httpfoundation-bridge": "^1.4",
+        "bshaffer/oauth2-server-php": "^1.11",
+        "cakephp/chronos": "^1.1",
+        "lcobucci/jwt": "^4.0@dev",
+        "myclabs/php-enum": "^1.6",
+        "symfony/framework-bundle": "^4.0",
+        "symfony/security": "^4.0",
+        "symfony/security-bundle": "^4.0"
+    },
+    "require-dev": {
+      "symfony/phpunit-bridge": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Fazland\\OAuthBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Fazland\\OAuthBundle\\Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+        <defaults public="false" />
+
+        <!-- Utils -->
+        <service id="Fazland\OAuthBundle\Encryption\Jwt" />
+
+        <!-- Storage -->
+        <service id="fazland_oauth.storage.client_credentials.abstract" class="Fazland\OAuthBundle\Storage\ClientCredentials" abstract="true">
+            <argument />
+        </service>
+        <service id="fazland_oauth.storage.jwt.abstract" class="Fazland\OAuthBundle\Storage\Jwt" abstract="true">
+            <argument />
+            <argument type="collection" />
+        </service>
+
+        <!-- Response types -->
+        <service id="fazland_oauth.response_type.jwt_access_token.abstract" class="Fazland\OAuthBundle\ResponseType\JwtAccessToken" abstract="true">
+            <argument />
+            <argument />
+            <argument />
+            <argument type="collection" />
+            <argument type="service" id="Fazland\OAuthBundle\Encryption\Jwt" />
+        </service>
+
+        <!-- Server -->
+        <service id="fazland_oauth.server.abstract" class="OAuth2\Server" abstract="true" />
+    </services>
+</container>
