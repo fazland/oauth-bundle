@@ -14,7 +14,7 @@ matrix:
   include:
     - php: 7.1
       env:
-        - SYMFONY_VERSION='3.4.*'
+        - SYMFONY_VERSION='4.*'
 
 before_install:
   - sh -c 'echo "extension = mongodb.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini'

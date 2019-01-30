@@ -1,6 +1,6 @@
 Fazland - OAuthBundle
 =====================
-[![Build Status](https://travis-ci.org/fazland/oauth-bundle.svg?branch=master)](https://travis-ci.org/fazland/api-platform-bundle)
+[![Build Status](https://travis-ci.com/fazland/oauth-bundle.svg?branch=master)](https://travis-ci.com/fazland/oauth-bundle)
 
 Easily integrate OAuth authentication in your Symfony application.
 
