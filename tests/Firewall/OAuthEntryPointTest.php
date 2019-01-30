@@ -2,6 +2,7 @@
 
 namespace Fazland\OAuthBundle\Tests\Firewall;
 
+use Cake\Chronos\Chronos;
 use Fazland\OAuthBundle\Security\Firewall\OAuthEntryPoint;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
@@ -26,6 +27,8 @@ class OAuthEntryPointTest extends TestCase
 
     public function testStartShouldReturnUnauthorizedJsonResponse(): void
     {
+        Chronos::setTestNow(Chronos::now());
+
         $data = [
             'error' => 'access_denied',
             'error_description' => 'OAuth authentication required',
@@ -37,5 +40,7 @@ class OAuthEntryPointTest extends TestCase
         $request = $this->prophesize(Request::class);
 
         self::assertEquals($response, $this->entryPoint->start($request->reveal()));
+
+        Chronos::setTestNow();
     }
 }
