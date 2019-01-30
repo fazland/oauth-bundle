@@ -5,7 +5,6 @@ namespace Fazland\OAuthBundle\ResponseType;
 use Cake\Chronos\Chronos;
 use Fazland\OAuthBundle\Encryption\KeyPair\KeyPairInterface;
 use Fazland\OAuthBundle\Security\Provider\UserProviderInterface;
-use Fazland\OAuthBundle\Security\User\OAuthClientInterface;
 use OAuth2\Encryption\EncryptionInterface;
 use OAuth2\ResponseType\JwtAccessToken as BaseJwtAccessToken;
 use OAuth2\Storage\AccessTokenInterface as AccessTokenStorageInterface;
@@ -156,6 +155,7 @@ class JwtAccessToken extends BaseJwtAccessToken
         }
 
         $user = $this->userProvider->provideUser($token);
+
         return $user instanceof KeyPairInterface ? $user : $client;
     }
 }

@@ -2,11 +2,9 @@
 
 namespace Fazland\OAuthBundle\Tests\Firewall;
 
-use Cake\Chronos\Chronos;
 use Fazland\OAuthBundle\Security\Firewall\OAuthEntryPoint;
 use PHPUnit\Framework\TestCase;
 use Prophecy\Prophecy\ObjectProphecy;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
