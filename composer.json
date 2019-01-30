@@ -18,7 +18,7 @@
         }
     ],
     "require": {
-        "php": "^7.1",
+        "php": "^7.2",
         "ext-json": "*",
         "bshaffer/oauth2-server-httpfoundation-bridge": "^1.4",
         "bshaffer/oauth2-server-php": "^1.11",
@@ -30,7 +30,8 @@
         "symfony/security-bundle": "^4.0"
     },
     "require-dev": {
-      "symfony/phpunit-bridge": "^4.0"
+        "phpunit/phpunit": "^7.0",
+        "symfony/phpunit-bridge": "^4.0"
     },
     "autoload": {
         "psr-4": {

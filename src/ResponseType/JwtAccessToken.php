@@ -3,6 +3,7 @@
 namespace Fazland\OAuthBundle\ResponseType;
 
 use Cake\Chronos\Chronos;
+use Fazland\OAuthBundle\Encryption\KeyPair\KeyPairInterface;
 use Fazland\OAuthBundle\Security\Provider\UserProviderInterface;
 use Fazland\OAuthBundle\Security\User\OAuthClientInterface;
 use OAuth2\Encryption\EncryptionInterface;
@@ -109,8 +110,8 @@ class JwtAccessToken extends BaseJwtAccessToken
      */
     protected function encodeToken(array $token, $clientId = null): string
     {
-        /** @var OAuthClientInterface $client */
-        $client = $this->userProvider->provideClient($clientId);
+        /** @var KeyPairInterface $client */
+        $client = $this->getKeyPair($token);
 
         return $this->encryptionUtil->encode($token, $client->getPrivateKey(), (string) $client->getSignatureAlgorithm());
     }
@@ -143,5 +144,18 @@ class JwtAccessToken extends BaseJwtAccessToken
             'token_type' => $this->config['token_type'],
             'scope' => $scope,
         ];
+    }
+
+    protected function getKeyPair(array $token): KeyPairInterface
+    {
+        $client = $this->userProvider->provideClient($token);
+
+        $subject = $token['sub'];
+        if (null === $subject) {
+            return $client;
+        }
+
+        $user = $this->userProvider->provideUser($token);
+        return $user instanceof KeyPairInterface ? $user : $client;
     }
 }
