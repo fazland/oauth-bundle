@@ -27,20 +27,17 @@ class OAuthEntryPointTest extends TestCase
 
     public function testStartShouldReturnUnauthorizedJsonResponse(): void
     {
-        Chronos::setTestNow(Chronos::now());
-
         $data = [
             'error' => 'access_denied',
             'error_description' => 'OAuth authentication required',
         ];
 
-        $headers = ['Cache-Control' => 'no-store'];
-
-        $response = JsonResponse::create($data, Response::HTTP_UNAUTHORIZED, $headers);
         $request = $this->prophesize(Request::class);
 
-        self::assertEquals($response, $this->entryPoint->start($request->reveal()));
+        $response = $this->entryPoint->start($request->reveal());
 
-        Chronos::setTestNow();
+        self::assertEquals($data, \json_decode($response->getContent(), true));
+        self::assertEquals('application/json', $response->headers->get('Content-Type'));
+        self::assertEquals(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
     }
 }
