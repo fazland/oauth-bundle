@@ -8,7 +8,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 interface UserProviderInterface
 {
     /**
-     * Provides a User retrieved from the token data.
+     * Provides a {@see UserInterface} retrieved from the token data.
      *
      * @param array $tokenData
      *
@@ -17,11 +17,22 @@ interface UserProviderInterface
     public function provideUser(array $tokenData): ?UserInterface;
 
     /**
-     * Provides a OAuthClientInterface retrieved from the token data.
+     * Provides a {@see OAuthClientInterface} retrieved from the token data.
      *
      * @param array $tokenData
      *
      * @return OAuthClientInterface|null
      */
     public function provideClient(array $tokenData): ?OAuthClientInterface;
+
+    /**
+     * Creates and stores a new {@see OAuthClientInterface}.
+     *
+     * @param string $name
+     * @param array  $redirectUris
+     * @param array  $grantTypes
+     *
+     * @return OAuthClientInterface
+     */
+    public function createClient(string $name, array $redirectUris, array $grantTypes): OAuthClientInterface;
 }

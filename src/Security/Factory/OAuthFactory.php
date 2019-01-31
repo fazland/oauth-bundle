@@ -2,6 +2,7 @@
 
 namespace Fazland\OAuthBundle\Security\Factory;
 
+use Fazland\OAuthBundle\Command\CreateClient;
 use Fazland\OAuthBundle\GrantType;
 use Fazland\OAuthBundle\Security\Firewall\OAuthEntryPoint;
 use Fazland\OAuthBundle\Security\Firewall\OAuthFirewall;
@@ -36,6 +37,9 @@ class OAuthFactory implements SecurityFactoryInterface
             ->addArgument(new Reference('security.token_storage'))
             ->addArgument(new Reference('security.authentication.manager'))
         ;
+
+        $commandDefinition = $container->getDefinition(CreateClient::class);
+        $commandDefinition->replaceArgument(0, [OAuthFirewall::class => $config['oauth_user_provider']]);
 
         return [$providerId, $listenerId, OAuthEntryPoint::class];
     }
