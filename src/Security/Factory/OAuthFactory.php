@@ -3,6 +3,7 @@
 namespace Fazland\OAuthBundle\Security\Factory;
 
 use Fazland\OAuthBundle\Command\CreateClient;
+use Fazland\OAuthBundle\DependencyInjection\Reference as OAuthReference;
 use Fazland\OAuthBundle\GrantType;
 use Fazland\OAuthBundle\Security\Firewall\OAuthEntryPoint;
 use Fazland\OAuthBundle\Security\Firewall\OAuthFirewall;
@@ -39,7 +40,7 @@ class OAuthFactory implements SecurityFactoryInterface
         ;
 
         $commandDefinition = $container->getDefinition(CreateClient::class);
-        $commandDefinition->replaceArgument(0, [OAuthFirewall::class => $config['oauth_user_provider']]);
+        $commandDefinition->addMethodCall('addUserProvider', [$id, new OAuthReference($config['oauth_user_provider'])]);
 
         return [$providerId, $listenerId, OAuthEntryPoint::class];
     }
@@ -123,7 +124,7 @@ class OAuthFactory implements SecurityFactoryInterface
         $providerId = 'security.authentication.provider.oauth.'.$id;
         $container
             ->setDefinition($providerId, new ChildDefinition(OAuthProvider::class))
-            ->setArgument(0, new Reference($oauthProvider))
+            ->setArgument(0, new OAuthReference($oauthProvider))
         ;
 
         return $providerId;
@@ -140,7 +141,7 @@ class OAuthFactory implements SecurityFactoryInterface
         $definition = $container->getDefinition($clientCredentialsStorageId);
         if (Storage\ClientCredentials::class === $definition->getClass()) {
             $definition = new ChildDefinition($clientCredentialsStorageId);
-            $definition->replaceArgument(0, $config['oauth_user_provider']);
+            $definition->replaceArgument(0, new OAuthReference($config['oauth_user_provider']));
 
             $storageId = 'fazland_oauth.storage.client_credentials.'.$id;
             $container->setDefinition($storageId, $definition);
@@ -161,7 +162,7 @@ class OAuthFactory implements SecurityFactoryInterface
         if (Storage\Jwt::class === $definition->getClass()) {
             $definition = new ChildDefinition($jwtStorageId);
             $definition
-                ->replaceArgument(0, $config['oauth_user_provider'])
+                ->replaceArgument(0, new OAuthReference($config['oauth_user_provider']))
                 ->replaceArgument(1, ['iss' => $config['jwt_issuer']])
             ;
 
@@ -176,9 +177,9 @@ class OAuthFactory implements SecurityFactoryInterface
     {
         $jwtResponseTypeId = 'fazland_oauth.response_type.jwt_access_token.'.$id;
         $container->register($jwtResponseTypeId, new ChildDefinition('fazland_oauth.response_type.jwt_access_token.abstract'))
-            ->replaceArgument(0, $config['oauth_user_provider'])
-            ->replaceArgument(1, isset($config['access_token_storage']) ? new Reference($config['access_token_storage']) : null)
-            ->replaceArgument(2, isset($config['refresh_token_storage']) ? new Reference($config['refresh_token_storage']) : null)
+            ->replaceArgument(0, new OAuthReference($config['oauth_user_provider']))
+            ->replaceArgument(1, isset($config['access_token_storage']) ? new OAuthReference($config['access_token_storage']) : null)
+            ->replaceArgument(2, isset($config['refresh_token_storage']) ? new OAuthReference($config['refresh_token_storage']) : null)
             ->replaceArgument(3, ['iss' => $config['jwt_issuer']])
         ;
 
@@ -195,20 +196,20 @@ class OAuthFactory implements SecurityFactoryInterface
     ): string {
         $serverId = 'fazland_oauth.server.'.$id;
         $serverDefinition = $container->register($serverId, new ChildDefinition('fazland_oauth.server.abstract'));
-        $serverDefinition->addMethodCall('addResponseType', [new Reference($jwtResponseTypeId)]);
+        $serverDefinition->addMethodCall('addResponseType', [new OAuthReference($jwtResponseTypeId)]);
 
         if (null !== $clientCredentialsStorageId) {
-            $grantTypeDefinition = new Definition(GrantType\ClientCredentials::class, [new Reference($clientCredentialsStorageId)]);
+            $grantTypeDefinition = new Definition(GrantType\ClientCredentials::class, [new OAuthReference($clientCredentialsStorageId)]);
             $serverDefinition->addMethodCall('addGrantType', [$grantTypeDefinition]);
         }
 
         if (null !== $jwtStorageId) {
-            $serverDefinition->addMethodCall('addStorage', [new Reference($jwtStorageId)]);
+            $serverDefinition->addMethodCall('addStorage', [new OAuthReference($jwtStorageId)]);
         }
 
         foreach (['grant_types' => 'addGrantType', 'storage' => 'addStorage', 'response_types' => 'addResponseType'] as $key => $method) {
             foreach ($config['server'][$key] as $referenceId) {
-                $serverDefinition->addMethodCall($method, [new Reference($referenceId)]);
+                $serverDefinition->addMethodCall($method, [new OAuthReference($referenceId)]);
             }
         }
 

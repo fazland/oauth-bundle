@@ -17,11 +17,20 @@ final class CreateClient extends Command
      */
     private $userProviders;
 
-    public function __construct(array $userProviders)
+    public function __construct()
     {
         parent::__construct('fazland:oauth:create-client');
 
-        $this->userProviders = $userProviders;
+        $this->userProviders = [];
+    }
+
+    public function addUserProvider(string $firewall, UserProviderInterface $userProvider): void
+    {
+        if (isset($this->userProviders[$firewall])) {
+            throw new \RuntimeException(UserProviderInterface::class.' already set for firewall '.$firewall);
+        }
+
+        $this->userProviders[$firewall] = $userProvider;
     }
 
     /**
@@ -46,28 +55,39 @@ final class CreateClient extends Command
         $io = new SymfonyStyle($input, $output);
         $io->title('Fazland - Create OAuth Client');
 
-        if (0 === \count($this->userProviders)) {
+        $countUserProviders = \count($this->userProviders);
+        if (0 === $countUserProviders) {
             throw new \RuntimeException('Cannot create an OAuth client without an implementation of '.UserProviderInterface::class);
         }
 
+        /** @var UserProviderInterface|null $userProvider */
+        $userProvider = null;
+
         $targetFirewallName = $input->getOption('firewall');
+        if (null !== $targetFirewallName) {
 
-        $filteredUserProviders = \array_filter($this->userProviders, function (string $firewallName) use ($targetFirewallName): bool {
-            return $targetFirewallName === $firewallName;
-        }, ARRAY_FILTER_USE_KEY);
+            $filteredUserProviders = \array_filter($this->userProviders, function (string $firewallName) use ($targetFirewallName): bool {
+                return $targetFirewallName === $firewallName;
+            }, ARRAY_FILTER_USE_KEY);
 
-        if (0 === \count($filteredUserProviders)) {
-            throw new \RuntimeException(\sprintf(
-                'Could not find the desired %s implementation using %s as firewall name',
-                UserProviderInterface::class,
-                $targetFirewallName
-            ));
+            if (0 === \count($filteredUserProviders)) {
+                throw new \RuntimeException(\sprintf(
+                    'Could not find the desired %s implementation using %s as firewall name',
+                    UserProviderInterface::class,
+                    $targetFirewallName
+                ));
+            }
+
+            $userProvider = \current($filteredUserProviders);
+        } elseif (1 === $countUserProviders) {
+            $userProvider = \current($this->userProviders);
+        }
+
+        if (null === $userProvider) {
+            throw new \RuntimeException('Please, specify for which firewall I have to create the client.');
         }
 
         $clientName = $input->getArgument('name');
-
-        /** @var UserProviderInterface $userProvider */
-        $userProvider = \current($filteredUserProviders);
 
         $redirectUris = $input->getOption('redirect-uri');
         if (! \is_array($redirectUris)) {
