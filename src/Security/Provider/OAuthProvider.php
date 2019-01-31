@@ -33,7 +33,7 @@ class OAuthProvider implements AuthenticationProviderInterface
     /**
      * {@inheritdoc}
      */
-    public function authenticate(TokenInterface $token)
+    public function authenticate(TokenInterface $token): TokenInterface
     {
         if (! $this->supports($token)) {
             $ex = new AuthenticationException('Unsupported token');

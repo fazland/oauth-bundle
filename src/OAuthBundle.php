@@ -2,6 +2,7 @@
 
 namespace Fazland\OAuthBundle;
 
+use Fazland\OAuthBundle\DependencyInjection\CompilerPass\CreateClientCommandPass;
 use Fazland\OAuthBundle\DependencyInjection\CompilerPass\ResolveReferencePass;
 use Fazland\OAuthBundle\Security\Factory\OAuthFactory;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -15,6 +16,7 @@ class OAuthBundle extends Bundle
     public function build(ContainerBuilder $container): void
     {
         $container
+            ->addCompilerPass(new CreateClientCommandPass())
             ->addCompilerPass(new ResolveReferencePass())
             ->getExtension('security')->addSecurityListenerFactory(new OAuthFactory())
         ;

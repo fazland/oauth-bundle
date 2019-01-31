@@ -30,5 +30,11 @@
 
         <!-- Server -->
         <service id="fazland_oauth.server.abstract" class="OAuth2\Server" abstract="true" />
+
+        <!-- EntryPoint -->
+        <service id="Fazland\OAuthBundle\Security\Firewall\OAuthEntryPoint" />
+
+        <!-- Command -->
+        <service id="Fazland\OAuthBundle\Command\CreateClientCommand" />
     </services>
 </container>
