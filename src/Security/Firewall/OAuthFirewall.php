@@ -2,7 +2,8 @@
 
 namespace Fazland\OAuthBundle\Security\Firewall;
 
-use Fazland\OAuthBundle\Security\Authentication\Token\OAuthToken;
+use Fazland\OAuthBundle\Exception\OAuthAuthenticationException;
+use Fazland\OAuthBundle\Security\Token\OAuthToken;
 use OAuth2\HttpFoundationBridge\Request;
 use OAuth2\Response;
 use OAuth2\Server;
@@ -72,16 +73,12 @@ class OAuthFirewall implements ListenerInterface
         try {
             $result = $this->authenticationManager->authenticate($token);
 
-            if ($result instanceof TokenInterface) {
-                $this->tokenStorage->setToken($result);
-            }
+            \assert($result instanceof TokenInterface);
 
-            if ($result instanceof HttpResponse) {
-                $event->setResponse($result);
-            }
+            $this->tokenStorage->setToken($result);
         } catch (AuthenticationException $ex) {
             $previous = $ex->getPrevious();
-            if (null !== $previous) {
+            if ($previous instanceof OAuthAuthenticationException) {
                 $event->setResponse($previous->getHttpResponse());
             }
         }

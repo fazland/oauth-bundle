@@ -3,7 +3,7 @@
 namespace Fazland\OAuthBundle\Security\Provider;
 
 use Fazland\OAuthBundle\Exception\OAuthAuthenticationException;
-use Fazland\OAuthBundle\Security\Authentication\Token\OAuthToken;
+use Fazland\OAuthBundle\Security\Token\OAuthToken;
 use OAuth2\HttpFoundationBridge\Response;
 use Symfony\Component\Security\Core\Authentication\Provider\AuthenticationProviderInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;

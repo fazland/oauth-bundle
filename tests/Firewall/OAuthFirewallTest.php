@@ -2,7 +2,9 @@
 
 namespace Fazland\OAuthBundle\Tests\Firewall;
 
+use Fazland\OAuthBundle\Exception\OAuthAuthenticationException;
 use Fazland\OAuthBundle\Security\Firewall\OAuthFirewall;
+use Fazland\OAuthBundle\Security\Token\OAuthToken;
 use OAuth2\HttpFoundationBridge\Request;
 use OAuth2\Response;
 use OAuth2\Server;
@@ -16,6 +18,8 @@ use Symfony\Component\HttpFoundation\Response as HttpResponse;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
 class OAuthFirewallTest extends TestCase
 {
@@ -94,13 +98,106 @@ class OAuthFirewallTest extends TestCase
         $event = $this->prophesize(GetResponseEvent::class);
         $event->getRequest()->willReturn($httpRequest);
         $event
-            ->setResponse(
-                JsonResponse::create($response->getParameters(), $response->getStatusCode(), $response->getHttpHeaders())
-            )
+            ->setResponse(Argument::that(function (HttpResponse $r) use ($response): bool {
+                self::assertEquals(\json_decode($r->getContent(), true), $response->getParameters());
+                self::assertEquals($r->getStatusCode(), $response->getStatusCode());
+
+                return true;
+            }))
             ->shouldBeCalled()
         ;
 
         $this->server->getAccessTokenData($request, $response)->willReturn([]);
+
+        $this->firewall->handle($event->reveal());
+    }
+
+    public function testHandleShouldNotActIfAuthenticateThrowsWithoutOAuthAuthenticationException(): void
+    {
+        $httpRequest = new HttpRequest();
+        $httpRequest->headers->set('Authorization', 'Bearer with_token');
+
+        $request = Request::createFromRequest($httpRequest);
+        $response = new Response();
+        $response->setError(HttpResponse::HTTP_UNAUTHORIZED, 'access_denied', 'OAuth authentication required');
+
+        $this->server->getAccessTokenData($request, $response)->willReturn(['I am not an empty token data']);
+
+        $exception = new AuthenticationException();
+
+        $event = $this->prophesize(GetResponseEvent::class);
+        $event->getRequest()->willReturn($httpRequest);
+        $event->setResponse(Argument::any())
+            ->shouldNotBeCalled()
+        ;
+
+        $this->authenticationManager->authenticate(Argument::type(OAuthToken::class))
+            ->willThrow($exception)
+        ;
+
+        $this->firewall->handle($event->reveal());
+    }
+
+    public function testHandleShouldReturnExceptionResponseIfAuthenticateThrowsWithOAuthAuthenticationException(): void
+    {
+        $httpRequest = new HttpRequest();
+        $httpRequest->headers->set('Authorization', 'Bearer with_token');
+
+        $request = Request::createFromRequest($httpRequest);
+        $response = new Response();
+        $response->setError(HttpResponse::HTTP_UNAUTHORIZED, 'access_denied', 'OAuth authentication required');
+
+        $this->server->getAccessTokenData($request, $response)->willReturn(['I am not an empty token data']);
+
+        $exceptionResponse = $this->prophesize(JsonResponse::class);
+        $oauthException = $this->prophesize(OAuthAuthenticationException::class);
+        $oauthException->getHttpResponse()->willReturn($exceptionResponse);
+
+        $exception = new AuthenticationException('OAuth2 authentication failed', 0, $oauthException->reveal());
+
+        $event = $this->prophesize(GetResponseEvent::class);
+        $event->getRequest()->willReturn($httpRequest);
+        $event->setResponse($exceptionResponse)
+            ->shouldBeCalled()
+        ;
+
+        $this->authenticationManager->authenticate(Argument::type(OAuthToken::class))
+            ->willThrow($exception)
+        ;
+
+        $this->firewall->handle($event->reveal());
+    }
+
+    public function testHandleShouldSetTheTokenIfAuthenticateReturnsTheToken(): void
+    {
+        $httpRequest = new HttpRequest();
+        $httpRequest->headers->set('Authorization', 'Bearer with_token');
+
+        $request = Request::createFromRequest($httpRequest);
+        $response = new Response();
+        $response->setError(HttpResponse::HTTP_UNAUTHORIZED, 'access_denied', 'OAuth authentication required');
+
+        $this->server->getAccessTokenData($request, $response)->willReturn(['I am not an empty token data']);
+
+        $exceptionResponse = $this->prophesize(JsonResponse::class);
+        $oauthException = $this->prophesize(OAuthAuthenticationException::class);
+        $oauthException->getHttpResponse()->willReturn($exceptionResponse);
+
+        $event = $this->prophesize(GetResponseEvent::class);
+        $event->getRequest()->willReturn($httpRequest);
+        $event->setResponse(Argument::any())
+            ->shouldNotBeCalled()
+        ;
+
+        $token = $this->prophesize(TokenInterface::class);
+
+        $this->authenticationManager->authenticate(Argument::type(OAuthToken::class))
+            ->willReturn($token)
+        ;
+
+        $this->tokenStorage->setToken($token)
+            ->shouldBeCalled()
+        ;
 
         $this->firewall->handle($event->reveal());
     }

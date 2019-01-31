@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Fazland\OAuthBundle\Security\Authentication\Token;
+namespace Fazland\OAuthBundle\Security\Token;
 
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
 
