@@ -20,6 +20,7 @@
     "require": {
         "php": "^7.2",
         "ext-json": "*",
+        "ext-openssl": "*",
         "bshaffer/oauth2-server-httpfoundation-bridge": "^1.4",
         "bshaffer/oauth2-server-php": "^1.11",
         "cakephp/chronos": "^1.1",
