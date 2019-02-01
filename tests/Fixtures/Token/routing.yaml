@@ -1,0 +1,9 @@
+token:
+    path: /token
+    controller: OAuthBundle:Token:token
+    methods: [GET, POST]
+
+options:
+    path: /token
+    controller: OAuthBundle:Token:options
+    methods: [OPTIONS]

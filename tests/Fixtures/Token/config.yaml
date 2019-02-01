@@ -1,0 +1,24 @@
+security:
+    firewalls:
+        main:
+            anonymous: true
+            stateless: true
+            oauth:
+                oauth_user_provider: Fazland\OAuthBundle\Tests\Fixtures\Token\UserProvider
+
+framework:
+    test: ~
+    secret: secret
+    router:
+        resource: "%kernel.root_dir%/routing.yaml"
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    logger:
+        class: Psr\Log\NullLogger
+
+    Fazland\OAuthBundle\Tests\Fixtures\Token\UserProvider: ~

@@ -69,35 +69,35 @@ class OAuthFactory implements SecurityFactoryInterface
     {
         $builder
             ->children()
-            ->scalarNode('oauth_user_provider')
-            ->isRequired()
-            ->cannotBeEmpty()
-            ->end()
-            ->scalarNode('access_token_storage')->end()
-            ->scalarNode('refresh_token_storage')->end()
-            ->scalarNode('client_credentials_storage')
-            ->defaultValue('fazland_oauth.storage.client_credentials.abstract')
-            ->end()
-            ->scalarNode('jwt_storage')
-            ->defaultValue('fazland_oauth.storage.jwt.abstract')
-            ->end()
-            ->scalarNode('jwt_issuer')
-            ->defaultValue('app')
-            ->end()
-            ->arrayNode('server')
-            ->addDefaultsIfNotSet()
-            ->children()
-            ->arrayNode('grant_types')
-            ->prototype('scalar')->end()
-            ->end()
-            ->arrayNode('storage')
-            ->prototype('scalar')->end()
-            ->end()
-            ->arrayNode('response_types')
-            ->prototype('scalar')->end()
-            ->end()
-            ->end()
-            ->end()
+                ->scalarNode('oauth_user_provider')
+                    ->isRequired()
+                    ->cannotBeEmpty()
+                ->end()
+                ->scalarNode('access_token_storage')->end()
+                ->scalarNode('refresh_token_storage')->end()
+                ->scalarNode('client_credentials_storage')
+                    ->defaultValue('fazland_oauth.storage.client_credentials.abstract')
+                ->end()
+                ->scalarNode('jwt_storage')
+                    ->defaultValue('fazland_oauth.storage.jwt.abstract')
+                ->end()
+                ->scalarNode('jwt_issuer')
+                    ->defaultValue('app')
+                ->end()
+                ->arrayNode('server')
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->arrayNode('grant_types')
+                            ->prototype('scalar')->end()
+                        ->end()
+                        ->arrayNode('storage')
+                            ->prototype('scalar')->end()
+                        ->end()
+                        ->arrayNode('response_types')
+                            ->prototype('scalar')->end()
+                        ->end()
+                    ->end()
+                ->end()
             ->end()
         ;
     }
@@ -110,6 +110,7 @@ class OAuthFactory implements SecurityFactoryInterface
         $container
             ->register($providerId, OAuthProvider::class)
             ->setArgument(0, new OAuthReference($oauthProvider))
+            ->setArgument(1, new Reference('security.user_checker'))
         ;
 
         return $providerId;
@@ -156,14 +157,14 @@ class OAuthFactory implements SecurityFactoryInterface
         return $storageId;
     }
 
-    private function createJwtResponseType(ContainerBuilder $container, string $id, array $config): ?string
+    private function createJwtResponseType(ContainerBuilder $container, string $id, array $config): string
     {
         $jwtResponseTypeId = 'fazland_oauth.response_type.jwt_access_token.'.$id;
         $container->setDefinition($jwtResponseTypeId, new ChildDefinition('fazland_oauth.response_type.jwt_access_token.abstract'))
-            ->setArgument(0, new OAuthReference($config['oauth_user_provider']))
-            ->setArgument(1, isset($config['access_token_storage']) ? new OAuthReference($config['access_token_storage']) : null)
-            ->setArgument(2, isset($config['refresh_token_storage']) ? new OAuthReference($config['refresh_token_storage']) : null)
-            ->setArgument(3, ['iss' => $config['jwt_issuer']])
+            ->replaceArgument(0, new OAuthReference($config['oauth_user_provider']))
+            ->replaceArgument(1, isset($config['access_token_storage']) ? new OAuthReference($config['access_token_storage']) : null)
+            ->replaceArgument(2, isset($config['refresh_token_storage']) ? new OAuthReference($config['refresh_token_storage']) : null)
+            ->replaceArgument(3, ['iss' => $config['jwt_issuer']])
         ;
 
         return $jwtResponseTypeId;
@@ -182,8 +183,13 @@ class OAuthFactory implements SecurityFactoryInterface
         $serverDefinition->addMethodCall('addResponseType', [new OAuthReference($jwtResponseTypeId)]);
 
         if (null !== $clientCredentialsStorageId) {
-            $grantTypeDefinition = new Definition(GrantType\ClientCredentials::class, [new OAuthReference($clientCredentialsStorageId)]);
-            $serverDefinition->addMethodCall('addGrantType', [$grantTypeDefinition]);
+            $oauthReference = new OAuthReference($clientCredentialsStorageId);
+
+            $grantTypeDefinition = new Definition(GrantType\ClientCredentials::class, [$oauthReference]);
+            $serverDefinition
+                ->addMethodCall('addGrantType', [$grantTypeDefinition])
+                ->addMethodCall('addStorage', [$oauthReference])
+            ;
         }
 
         if (null !== $jwtStorageId) {

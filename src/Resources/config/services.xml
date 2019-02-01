@@ -32,5 +32,10 @@
 
         <!-- EntryPoint -->
         <service id="Fazland\OAuthBundle\Security\Firewall\OAuthEntryPoint" />
+
+        <service id="Fazland\OAuthBundle\ArgumentResolver\OAuthServerResolver">
+            <argument id="security.firewall.map" type="service" />
+            <tag name="controller.argument_value_resolver" priority="25" />
+        </service>
     </services>
 </container>

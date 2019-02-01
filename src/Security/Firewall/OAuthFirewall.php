@@ -44,6 +44,16 @@ class OAuthFirewall implements ListenerInterface
     }
 
     /**
+     * Gets the OAuthServer.
+     *
+     * @return Server
+     */
+    public function getOAuthServer(): Server
+    {
+        return $this->oauthServer;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function handle(GetResponseEvent $event): void
