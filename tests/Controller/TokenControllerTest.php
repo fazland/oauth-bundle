@@ -62,9 +62,6 @@ class TokenControllerTest extends WebTestCase
                 'grant_type' => 'client_credentials',
             ]);
 
-            if ($response->getStatusCode() !== 200) {
-                var_dump($response->getContent(), $method);die;
-            }
             self::assertEquals(Response::HTTP_OK, $response->getStatusCode());
 
             $responseBody = \json_decode($response->getContent(), true);
