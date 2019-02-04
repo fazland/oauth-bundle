@@ -147,14 +147,14 @@ class JwtAccessToken extends BaseJwtAccessToken
 
     protected function getKeyPair(array $token): KeyPairInterface
     {
-        $client = $this->userProvider->provideClient($token);
+        $client = $this->userProvider->provideClient(['client_id' => $token['aud']]);
 
         $subject = $token['sub'];
         if (null === $subject) {
             return $client;
         }
 
-        $user = $this->userProvider->provideUser($token);
+        $user = $this->userProvider->provideUser(['user_id' => $token['sub']]);
 
         return $user instanceof KeyPairInterface ? $user : $client;
     }
