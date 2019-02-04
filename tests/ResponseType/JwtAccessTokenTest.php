@@ -72,7 +72,7 @@ class JwtAccessTokenTest extends TestCase
         $client->getSignatureAlgorithm()->willReturn(SignatureAlgorithm::RS256());
 
         $this->userProvider
-            ->provideClient(Argument::withEntry('aud', 'test_client_id'))
+            ->provideClient(Argument::withEntry('client_id', 'test_client_id'))
             ->willReturn($client)
         ;
 
@@ -94,7 +94,7 @@ class JwtAccessTokenTest extends TestCase
         $client->getSignatureAlgorithm()->willReturn(SignatureAlgorithm::RS256());
 
         $this->userProvider
-            ->provideClient(Argument::withEntry('aud', 'test_client_id'))
+            ->provideClient(Argument::withEntry('client_id', 'test_client_id'))
             ->willReturn($client)
         ;
 
@@ -106,7 +106,7 @@ class JwtAccessTokenTest extends TestCase
         $user->getSignatureAlgorithm()->willReturn(SignatureAlgorithm::RS512());
 
         $this->userProvider
-            ->provideUser(Argument::withEntry('sub', $userId))
+            ->provideUser(Argument::withEntry('user_id', $userId))
             ->willReturn($user)
         ;
 
