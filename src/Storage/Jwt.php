@@ -66,7 +66,7 @@ class Jwt implements JwtAccessTokenInterface, JwtBearerInterface, LoggerAwareInt
         }
 
         /** @var Token\DataSet $tokenClaims */
-        $tokenClaims = $token->claims();
+        $tokenClaims = $this->convertTokenToOAuth($token);
 
         $validator = new Validator();
         if (! $validator->validate(
@@ -85,8 +85,9 @@ class Jwt implements JwtAccessTokenInterface, JwtBearerInterface, LoggerAwareInt
             return null;
         }
 
-        $clientId = $tokenClaims->get('aud')[0] ?? null;
-        $subject = $tokenClaims->get('sub');
+
+        $clientId = $tokenClaims->get('client_id')[0] ?? null;
+        $subject = $tokenClaims->get('user_id');
 
         $key = null !== $clientId ? $this->getKeyPair($tokenClaims) : null;
         if (null === $key) {
@@ -105,7 +106,7 @@ class Jwt implements JwtAccessTokenInterface, JwtBearerInterface, LoggerAwareInt
             return null;
         }
 
-        return $this->convertTokenToOAuth($token);
+        return $tokenClaims->all();
     }
 
     /**
@@ -161,14 +162,14 @@ class Jwt implements JwtAccessTokenInterface, JwtBearerInterface, LoggerAwareInt
      *
      * @param Token $token
      *
-     * @return array
+     * @return Token\DataSet
      */
-    private function convertTokenToOAuth(Token $token): array
+    private function convertTokenToOAuth(Token $token): Token\DataSet
     {
-        return \iterator_to_array($this->traverseAndTranslatePayload($token));
+        return new Token\DataSet(\iterator_to_array($this->traverseAndTranslatePayload($token)), $token->payload());
     }
 
-    private function traverseAndTranslatePayload(Token $token): \Generator
+    private function traverseAndTranslatePayload(Token $token): iterable
     {
         foreach ($token->claims()->all() as $name => $claim) {
             switch ($name) {
@@ -204,7 +205,7 @@ class Jwt implements JwtAccessTokenInterface, JwtBearerInterface, LoggerAwareInt
             return null;
         }
 
-        $subject = $tokenClaims->get('sub');
+        $subject = $tokenClaims->get('user_id');
         if (null === $subject) {
             return $client;
         }

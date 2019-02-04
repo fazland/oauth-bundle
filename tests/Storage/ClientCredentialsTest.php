@@ -38,7 +38,7 @@ class ClientCredentialsTest extends TestCase
         $client->getScope()->willReturn('');
 
         $clientId = 'TEST';
-        $this->userProvider->provideClient(['aud' => $clientId])->willReturn($client);
+        $this->userProvider->provideClient(['client_id' => $clientId])->willReturn($client);
 
         $result = $this->storage->getClientDetails($clientId);
 
@@ -51,7 +51,7 @@ class ClientCredentialsTest extends TestCase
     public function testGetClientDetailsReturnsFalseIfNoClientIsFound(): void
     {
         $clientId = 'TEST';
-        $this->userProvider->provideClient(['aud' => $clientId])->willReturn(null);
+        $this->userProvider->provideClient(['client_id' => $clientId])->willReturn(null);
 
         self::assertFalse($this->storage->getClientDetails($clientId));
     }

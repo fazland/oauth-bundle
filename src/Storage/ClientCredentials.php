@@ -79,6 +79,6 @@ class ClientCredentials implements ClientCredentialsInterface
 
     private function provideClient(string $clientId): ?OAuthClientInterface
     {
-        return $this->userProvider->provideClient(['aud' => $clientId]);
+        return $this->userProvider->provideClient(['client_id' => $clientId]);
     }
 }

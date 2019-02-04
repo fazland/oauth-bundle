@@ -88,8 +88,13 @@ class OAuthProvider implements AuthenticationProviderInterface
      */
     private function getUserFromTokenData(array $tokenData): UserInterface
     {
-        $user = $this->userProvider->provide($tokenData);
+        if (isset($tokenData['sub'])) {
+            $method = 'provideUser';
+        } else {
+            $method = 'provideClient';
+        }
 
+        $user = $this->userProvider->{$method}($tokenData);
         if (null === $user) {
             $ex = new OAuthAuthenticationException(Response::HTTP_UNAUTHORIZED, 'access_denied', 'Cannot find user');
             throw new AuthenticationException('OAuth2 authentication failed', 0, $ex);
