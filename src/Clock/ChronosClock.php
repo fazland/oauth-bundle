@@ -12,6 +12,6 @@ final class ChronosClock implements Clock
      */
     public function now(): \DateTimeImmutable
     {
-        return Chronos::now();
+        return new \DateTimeImmutable(Chronos::now()->toAtomString());
     }
 }
