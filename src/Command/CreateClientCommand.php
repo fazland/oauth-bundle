@@ -65,7 +65,6 @@ final class CreateClientCommand extends Command
 
         $targetFirewallName = $input->getOption('firewall');
         if (null !== $targetFirewallName) {
-
             $filteredUserProviders = \array_filter($this->userProviders, function (string $firewallName) use ($targetFirewallName): bool {
                 return $targetFirewallName === $firewallName;
             }, ARRAY_FILTER_USE_KEY);

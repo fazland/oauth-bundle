@@ -69,11 +69,7 @@ class Jwt implements JwtAccessTokenInterface, JwtBearerInterface, LoggerAwareInt
         $tokenClaims = $this->convertTokenToOAuth($token);
 
         $validator = new Validator();
-        if (! $validator->validate(
-            $token,
-            new ValidAt(new ChronosClock()),
-            new IssuedBy($this->config['iss'])
-        )) {
+        if (! $validator->validate($token, new ValidAt(new ChronosClock()), new IssuedBy($this->config['iss']))) {
             $this->logger->error('Token validation failed', [
                 'token' => $oauthToken,
                 'now' => Chronos::now()->getTimestamp(),
@@ -84,7 +80,6 @@ class Jwt implements JwtAccessTokenInterface, JwtBearerInterface, LoggerAwareInt
 
             return null;
         }
-
 
         $clientId = $tokenClaims->get('client_id')[0] ?? null;
         $subject = $tokenClaims->get('user_id');

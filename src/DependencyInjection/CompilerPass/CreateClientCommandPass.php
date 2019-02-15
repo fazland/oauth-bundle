@@ -22,10 +22,6 @@ class CreateClientCommandPass implements CompilerPassInterface
         }
 
         $commandDefinition = $container->getDefinition(CreateClientCommand::class);
-        /**
-         * @var string $firewall
-         * @var OAuthReference $userProvider
-         */
         foreach ($userProviders as $firewall => $userProvider) {
             $commandDefinition->addMethodCall('addUserProvider', [$firewall, new Reference($userProvider)]);
         }

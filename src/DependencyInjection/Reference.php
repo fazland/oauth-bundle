@@ -22,9 +22,6 @@ class Reference
         $this->invalidBehavior = $invalidBehavior;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __toString(): string
     {
         return $this->id;
