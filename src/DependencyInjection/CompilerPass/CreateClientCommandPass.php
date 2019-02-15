@@ -3,7 +3,6 @@
 namespace Fazland\OAuthBundle\DependencyInjection\CompilerPass;
 
 use Fazland\OAuthBundle\Command\CreateClientCommand;
-use Fazland\OAuthBundle\DependencyInjection\Reference as OAuthReference;
 use Fazland\OAuthBundle\Security\Factory\OAuthFactory;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
