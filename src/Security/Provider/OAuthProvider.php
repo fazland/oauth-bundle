@@ -88,7 +88,7 @@ class OAuthProvider implements AuthenticationProviderInterface
      */
     private function getUserFromTokenData(array $tokenData): UserInterface
     {
-        if (isset($tokenData['sub'])) {
+        if (isset($tokenData['sub']) || isset($tokenData['user_id'])) {
             $method = 'provideUser';
         } else {
             $method = 'provideClient';
