@@ -6,6 +6,11 @@
     <services>
         <defaults public="false" />
 
+        <!-- Controller -->
+        <service id="Fazland\OAuthBundle\Controller\TokenController" autowire="true">
+            <tag name="controller.service_arguments" />
+        </service>
+
         <!-- Utils -->
         <service id="Fazland\OAuthBundle\Encryption\Jwt" />
 
