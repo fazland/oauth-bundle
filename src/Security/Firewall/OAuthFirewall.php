@@ -9,14 +9,13 @@ use OAuth2\Response;
 use OAuth2\Server;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Http\Firewall\ListenerInterface;
 
-class OAuthFirewall implements ListenerInterface
+class OAuthFirewall
 {
     /**
      * @var Server
@@ -53,10 +52,7 @@ class OAuthFirewall implements ListenerInterface
         return $this->oauthServer;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function handle(GetResponseEvent $event): void
+    public function __invoke(RequestEvent $event): void
     {
         $request = $event->getRequest();
         $authHeader = $request->headers->get('Authorization');

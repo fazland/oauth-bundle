@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\HeaderBag;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request as HttpRequest;
 use Symfony\Component\HttpFoundation\Response as HttpResponse;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Security\Core\Authentication\AuthenticationManagerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -79,11 +79,11 @@ class OAuthFirewallTest extends TestCase
         $this->server->getAccessTokenData(Argument::cetera())->shouldNotBeCalled();
         $this->authenticationManager->authenticate(Argument::any())->shouldNotBeCalled();
 
-        $event = $this->prophesize(GetResponseEvent::class);
+        $event = $this->prophesize(RequestEvent::class);
         $event->getRequest()->willReturn($request);
         $event->setResponse(Argument::any())->shouldNotBeCalled();
 
-        $this->firewall->handle($event->reveal());
+        ($this->firewall)($event->reveal());
     }
 
     public function testHandleShouldReturnUnauthorizedResponseIfServerHasEmptyTokenDataForCurrentRequest(): void
@@ -95,7 +95,7 @@ class OAuthFirewallTest extends TestCase
         $response = new Response();
         $response->setError(HttpResponse::HTTP_UNAUTHORIZED, 'access_denied', 'OAuth authentication required');
 
-        $event = $this->prophesize(GetResponseEvent::class);
+        $event = $this->prophesize(RequestEvent::class);
         $event->getRequest()->willReturn($httpRequest);
         $event
             ->setResponse(Argument::that(function (HttpResponse $r) use ($response): bool {
@@ -109,7 +109,7 @@ class OAuthFirewallTest extends TestCase
 
         $this->server->getAccessTokenData($request, $response)->willReturn([]);
 
-        $this->firewall->handle($event->reveal());
+        ($this->firewall)($event->reveal());
     }
 
     public function testHandleShouldNotActIfAuthenticateThrowsWithoutOAuthAuthenticationException(): void
@@ -125,7 +125,7 @@ class OAuthFirewallTest extends TestCase
 
         $exception = new AuthenticationException();
 
-        $event = $this->prophesize(GetResponseEvent::class);
+        $event = $this->prophesize(RequestEvent::class);
         $event->getRequest()->willReturn($httpRequest);
         $event->setResponse(Argument::any())
             ->shouldNotBeCalled()
@@ -135,7 +135,7 @@ class OAuthFirewallTest extends TestCase
             ->willThrow($exception)
         ;
 
-        $this->firewall->handle($event->reveal());
+        ($this->firewall)($event->reveal());
     }
 
     public function testHandleShouldReturnExceptionResponseIfAuthenticateThrowsWithOAuthAuthenticationException(): void
@@ -155,7 +155,7 @@ class OAuthFirewallTest extends TestCase
 
         $exception = new AuthenticationException('OAuth2 authentication failed', 0, $oauthException->reveal());
 
-        $event = $this->prophesize(GetResponseEvent::class);
+        $event = $this->prophesize(RequestEvent::class);
         $event->getRequest()->willReturn($httpRequest);
         $event->setResponse($exceptionResponse)
             ->shouldBeCalled()
@@ -165,7 +165,7 @@ class OAuthFirewallTest extends TestCase
             ->willThrow($exception)
         ;
 
-        $this->firewall->handle($event->reveal());
+        ($this->firewall)($event->reveal());
     }
 
     public function testHandleShouldSetTheTokenIfAuthenticateReturnsTheToken(): void
@@ -183,7 +183,7 @@ class OAuthFirewallTest extends TestCase
         $oauthException = $this->prophesize(OAuthAuthenticationException::class);
         $oauthException->getHttpResponse()->willReturn($exceptionResponse);
 
-        $event = $this->prophesize(GetResponseEvent::class);
+        $event = $this->prophesize(RequestEvent::class);
         $event->getRequest()->willReturn($httpRequest);
         $event->setResponse(Argument::any())
             ->shouldNotBeCalled()
@@ -199,6 +199,6 @@ class OAuthFirewallTest extends TestCase
             ->shouldBeCalled()
         ;
 
-        $this->firewall->handle($event->reveal());
+        ($this->firewall)($event->reveal());
     }
 }
