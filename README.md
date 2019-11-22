@@ -6,8 +6,8 @@ Easily integrate OAuth authentication in your Symfony application.
 
 Requirements
 ------------
-- php ^7.2
-- symfony/symfony ^4.0
+- php ^7.3
+- symfony/symfony ^4.3|^5.0
 
 Installation
 ------------
