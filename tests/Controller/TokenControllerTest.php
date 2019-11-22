@@ -105,7 +105,11 @@ class TokenControllerTest extends WebTestCase
             $requestData = null;
         }
 
-        $client = static::createClient();
+        static $client;
+        if (! static::$booted) {
+            $client = static::createClient();
+        }
+
         $client->request($method, $url, [], [], $headers, null !== $requestData ? \json_encode($requestData) : null);
 
         return $client->getResponse();

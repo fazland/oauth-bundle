@@ -1,9 +1,9 @@
 token:
-    path: /token
-    controller: OAuthBundle:Token:token
-    methods: [GET, POST]
+    path: '/token'
+    controller: 'Fazland\OAuthBundle\Controller\TokenController::tokenAction'
+    methods: ['GET', 'POST']
 
 options:
-    path: /token
-    controller: OAuthBundle:Token:options
-    methods: [OPTIONS]
+    path: '/token'
+    controller: 'Fazland\OAuthBundle\Controller\TokenController::optionsAction'
+    methods: ['OPTIONS']
