@@ -18,4 +18,11 @@ abstract class AbstractTestKernel extends Kernel
         yield new SecurityBundle();
         yield new OAuthBundle();
     }
+
+    protected function getKernelParameters(): array
+    {
+        return parent::getKernelParameters() + [
+            'kernel.root_dir' => \dirname((new \ReflectionClass($this))->getFileName()),
+        ];
+    }
 }
