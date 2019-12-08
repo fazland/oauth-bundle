@@ -77,8 +77,12 @@ class ClientCredentials implements ClientCredentialsInterface
         return null !== $client && \in_array($grantType, $client->getGrantTypes(), true);
     }
 
-    private function provideClient(string $clientId): ?OAuthClientInterface
+    private function provideClient(?string $clientId): ?OAuthClientInterface
     {
+        if (null === $clientId) {
+            return null;
+        }
+
         return $this->userProvider->provideClient(['client_id' => $clientId]);
     }
 }

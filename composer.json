@@ -23,7 +23,7 @@
         "ext-openssl": "*",
         "bshaffer/oauth2-server-httpfoundation-bridge": "^1.4",
         "bshaffer/oauth2-server-php": "^1.11",
-        "cakephp/chronos": "^1.1",
+        "cakephp/chronos": "^1.1|^2.0",
         "lcobucci/jwt": "^4.0@dev",
         "myclabs/php-enum": "^1.6",
         "symfony/framework-bundle": "^4.3|^5.0",

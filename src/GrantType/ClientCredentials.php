@@ -15,6 +15,11 @@ class ClientCredentials extends HttpBasic implements GrantTypeInterface
      */
     private $clientData;
 
+    public function getClientId()
+    {
+        return @parent::getClientId();
+    }
+
     /**
      * {@inheritdoc}
      */
