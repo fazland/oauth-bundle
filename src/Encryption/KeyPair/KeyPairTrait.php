@@ -61,7 +61,7 @@ trait KeyPairTrait
         \openssl_pkey_export($resource, $priKey);
         $pubKey = \openssl_pkey_get_details($resource)['key'];
 
-        $this->signatureAlgorithm = SignatureAlgorithm::ES256();
+        $this->signatureAlgorithm = SignatureAlgorithm::ES512();
         $this->privateKey = $priKey;
         $this->publicKey = $pubKey;
     }

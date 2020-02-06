@@ -99,4 +99,40 @@ X55X5AksK3MM6swBLQIDAQAB
         $jwt = 'eyJhbGciOiJIUzI1NiIsInR5cGUiOiJKV1QifQ.eyJpZCI6IjRlNzIwMjNmYmRmZTViMTFkODZhNDYzMDNiMTY3MzVjYTkxNjg1Y2MiLCJqdGkiOiI0ZTcyMDIzZmJkZmU1YjExZDg2YTQ2MzAzYjE2NzM1Y2E5MTY4NWNjIiwiaXNzIjoiYXBpLmJlY3Jvd2R5LmxvY2FsIiwiYXVkIjoiYXNhc2QiLCJzdWIiOjEsImV4cCI6MTQ1ODUxNTExNCwiaWF0IjoxNDU4NTExNTE0LCJ0b2tlbl90eXBlIjoiYmVhcmVyIiwic2NvcGUiOiJyZWFkIn0.ZJ_6BDUk-CTHCP4VSOUYzPXfCQxKvgaerkVXZG-38d7nbc8fs2906O3NU6DW7imU7B-gTK4hlqiwe3YNLMTqmxrETJQV9vwIGivp3A8_sTFr5AQQCiXwK_ib2lGj2_LE6D8fsuSlmA1KRRAYrOW5Iz8FGdo0ukmfhCV88czC2ak';
         self::assertFalse($this->encoder->decode($jwt, $clientKey));
     }
+
+    public function testEcdsaSignatures()
+    {
+        $privateKey = <<<EOF
+-----BEGIN EC PRIVATE KEY-----
+MHQCAQEEIOyZuXXez9GWLXkNvFqryYoadZTHWCnq9wpTXNFntwKGoAcGBSuBBAAK
+oUQDQgAEVOTH/lI3+zNeN78ZH1nvj3UTQsTKqSp+ct+0FacKo0erzPsl7a1IGHJn
+lxs5VpIKMDgjAc3YbKz8WLBn7Yd9SQ==
+-----END EC PRIVATE KEY-----
+EOF;
+
+        $publicKey = <<<EOF
+-----BEGIN PUBLIC KEY-----
+MFYwEAYHKoZIzj0CAQYFK4EEAAoDQgAEVOTH/lI3+zNeN78ZH1nvj3UTQsTKqSp+
+ct+0FacKo0erzPsl7a1IGHJnlxs5VpIKMDgjAc3YbKz8WLBn7Yd9SQ==
+-----END PUBLIC KEY-----
+EOF;
+
+        $params = [
+            'id' => '4e72023fbdfe5b11d86a46303b16735ca91685cc',
+            'jti' => '4e72023fbdfe5b11d86a46303b16735ca91685cc',
+            'iss' => 'api.becrowdy.local',
+            'aud' => 'asasd',
+            'sub' => 1,
+            'exp' => 1458515114,
+            'iat' => 1458511514,
+            'token_type' => 'bearer',
+            'scope' => 'read',
+        ];
+
+        $jwt = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NiJ9.eyJpZCI6IjRlNzIwMjNmYmRmZTViMTFkODZhNDYzMDNiMTY3MzVjYTkxNjg1Y2MiLCJqdGkiOiI0ZTcyMDIzZmJkZmU1YjExZDg2YTQ2MzAzYjE2NzM1Y2E5MTY4NWNjIiwiaXNzIjoiYXBpLmJlY3Jvd2R5LmxvY2FsIiwiYXVkIjoiYXNhc2QiLCJzdWIiOjEsImV4cCI6MTQ1ODUxNTExNCwiaWF0IjoxNDU4NTExNTE0LCJ0b2tlbl90eXBlIjoiYmVhcmVyIiwic2NvcGUiOiJyZWFkIn0';
+
+        $result = $this->encoder->encode($params, $privateKey, SignatureAlgorithm::ES256());
+        self::assertStringStartsWith($jwt, $result);
+        self::assertEquals($params, $this->encoder->decode($result, $publicKey));
+    }
 }

@@ -6,6 +6,7 @@ use Fazland\OAuthBundle\Enum\SignatureAlgorithm;
 use Fazland\OAuthBundle\Storage\Jwt as StorageJwt;
 use Lcobucci\Jose\Parsing\Parser as Decoder;
 use Lcobucci\JWT\Parser as ParserInterface;
+use Lcobucci\JWT\Signer\Ecdsa;
 use Lcobucci\JWT\Signer\Key;
 use Lcobucci\JWT\Token;
 use OAuth2\Encryption\Jwt as BaseJwt;
