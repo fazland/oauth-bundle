@@ -2,9 +2,9 @@
 
 namespace Fazland\OAuthBundle\Encryption;
 
-use Fazland\OAuthBundle\Encryption\Signer\Ecdsa;
 use Fazland\OAuthBundle\Enum\SignatureAlgorithm;
 use Lcobucci\JWT\Signer;
+use Lcobucci\JWT\Signer\Ecdsa;
 use Lcobucci\JWT\Signer\Hmac;
 use Lcobucci\JWT\Signer\Rsa;
 
