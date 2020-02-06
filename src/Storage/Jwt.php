@@ -142,7 +142,7 @@ class Jwt implements JwtAccessTokenInterface, JwtBearerInterface, LoggerAwareInt
 
     public static function verify(Token $token, string $key): bool
     {
-        $alg = $token->headers()->get('alg') ?? null;
+        $alg = $token->headers()->get('alg');
         if (! SignatureAlgorithm::isValid($alg)) {
             return false;
         }
