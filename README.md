@@ -2,6 +2,11 @@ Fazland - OAuthBundle
 =====================
 [![Build Status](https://travis-ci.com/fazland/oauth-bundle.svg?branch=master)](https://travis-ci.com/fazland/oauth-bundle)
 
+#### ⚠️ Warning
+
+This repository has been deprecated.  
+The development of this package will continue on https://github.com/refugis/oauth-bundle.
+
 Easily integrate OAuth authentication in your Symfony application.
 
 Requirements
